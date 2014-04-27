@@ -56,7 +56,8 @@ tabledata <- as.data.table(data) # convert data to table
 tidy <- tabledata[, lapply(.SD, mean), by = list(activity, subject)]
 
 # write table
-write.table(tidy, paste('./output.txt', sep=sep), sep=' ', col.names=names(tidy))
+write.table(tidy, "./output.txt", sep=' ', col.names=names(tidy))
+tidy
 
 
 
