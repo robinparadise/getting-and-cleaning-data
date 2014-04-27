@@ -1,4 +1,3 @@
-## You should create one R script called run_analysis.R that does the following. 
 ## 1 - Merges the training and the test sets to create one data set.
 ## 2 - Extracts only the measurements on the mean and standard deviation for each measurement. 
 ## 3 - Uses descriptive activity names to name the activities in the data set
@@ -6,16 +5,16 @@
 ## 5 - Creates a second, independent tidy data set with the average of each variable for 
 ## each activity and each subject.
 
-ROOT <- 'data/UCI HAR Dataset'
+ROOT <- 'UCI HAR Dataset'
 sep <- '/'
 
 ## A. Download data files
-if(!file.exists("./data")) {
-  dir.create("./data")
+if ( !file.exists(ROOT) ) {
+  dir.create(paste(".", ROOT, sep=sep))
+  fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+  download.file(fileUrl, destfile = "Dataset.zip", method = "curl")
+  unzip("Dataset.zip", exdir=".")
 }
-fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-download.file(fileUrl, destfile = "./data/Dataset.zip", method = "curl")
-unzip("./data/Dataset.zip", exdir="./data")
 
 ## B. Read files: test and train sets
 test.x <- read.table(paste(ROOT, "test", "X_test.txt", sep=sep))
@@ -47,18 +46,17 @@ data <- bindData[, features$variable]
 actNames <<- read.table(paste(ROOT,'activity_labels.txt', sep=sep),
                         sep=' ', col.names=c('index','name'))
 ## 4 - Appropriately labels the data set with descriptive activity names.
-oldActivity <- data$activity
 data$activity <- mapvalues(as.character(data$activity),
                            as.character(actNames$index),
                            as.character(actNames$name))
 
 ## 5 - Creates a second, independent tidy data set with the average of each variable for 
 ## each activity and each subject.
-tabledata <- as.data.table(data)
+tabledata <- as.data.table(data) # convert data to table
 tidy <- tabledata[, lapply(.SD, mean), by = list(activity, subject)]
 
 # write table
-write.table(tidy, paste(ROOT, 'output.txt', sep=sep), sep=' ', col.names=names(tidy))
+write.table(tidy, paste('./output.txt', sep=sep), sep=' ', col.names=names(tidy))
 
 
 
